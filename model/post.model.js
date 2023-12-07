@@ -1,17 +1,17 @@
-const mongoose=require("mongoose");
-const contactSchema=mongoose.Schema({
-    name: String,
-    email : String,
-	phone : String,
-	label : String,
-	booked_slots : [String],
-},{
-    versionKey:false
-})
+const mongoose = require("mongoose");
 
+const userSchema = mongoose.Schema(
+    {
+        name : String,
+        email: String,
+        phone:  String,
+        label : String ,
+    },
+    {
+        versionKey : false
+    }
+)
 
-const contactModel=mongoose.model("contact", contactSchema);
+const UserModel = mongoose.model("user" , userSchema);
 
-module.exports={
-    contactModel
-}
+module.exports = {UserModel}

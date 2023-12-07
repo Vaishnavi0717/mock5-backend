@@ -1,67 +1,47 @@
-const express=require("express");
-const {contactModel} =require("../model/post.model");
+const express = require("express");
+const { UserModel } = require("../model/post.model");
+const userRouter = express.Router();
 
-const contactRouter=express.Router();
+module.exports = {userRouter};
 
-
-
-
-
-contactRouter.post("/create", async(req,res)=>{
-    const {name,email,phone,label}=req.body;
+userRouter.post("/add" , async(req, res)=> {
+   const {name,email,phone,label} = req.body;
     try {
-        const contact=new contactModel(name,email,phone,label);
-        await contact.save();
-        res.status(200).send({"msg":"A new contact has been added"})
+       const user = new UserModel({name,email,phone,label}) 
+       await user.save();
+       res.status(200).send({"msg" : "new user added" , "user" : req.body})
     } catch (error) {
-        res.status(400).send({"error":"Error Occured while adding the contact"})
+        res.status(400).send({"error" : error})
     }
 })
 
 
-
-contactRouter.get("/", async(req,res)=>{
+userRouter.get( "/" ,async(req , res)=>{
     try {
-        const contact=await contactModel.find({name:req.body.name});
-        res.status(200).send(contact)
+        const books = await UserModel.find();
+        res.status(200).send(books)
     } catch (error) {
-        res.status(400).send(error)
+        res.status(400).send({"error" : error})
     }
 })
 
-
-
-contactRouter.patch("update/:contactId", async(req, res)=>{
-    const {contactId}= req.params;
-    const contact= await contactModel.findOne({_id:contactId});
-    try {
-        if(req.body.name===contact.name){
-            await contactModel.findByIdAndUpdate({_id:contactId}, req.body);
-            res.status(200).send({"msg":`The note with ${contactId} has been updated`})
-        }
-
-    } catch (error) {
-        res.status(400).send({"error":"error"})
-    }
+userRouter.delete("/delete/:id" , async(req,res)=> {
+   const {id} = req.params;
+   try {
+    const data = await UserModel.findByIdAndDelete({_id: id})
+    res.status(200).send({"msg" : "user has been deleted"})
+   } catch (error) {
+    res.status(400).send({"error" : error})
+   }
 })
 
 
-
-contactRouter.delete("delete/:contactId", async(req, res)=>{
-    const {contactId}= req.params;
-    const contact= await contactModel.findOne({_id:contactId});
+userRouter.patch("/update/:id" , async(req,res)=> {
+    const {id} = req.params;
     try {
-        if(req.body.name===contact.name){
-            await contactModel.findByIdAndDelete({_id:contactId});
-            res.status(200).send({"msg":`The note with ${contactId} has been deleted`})
-        }
-
+     const data = await UserModel.findByIdAndUpdate({_id: id } , req.body)
+     res.status(200).send({"msg" : "user has been Updated"})
     } catch (error) {
-        res.status(400).send({"error":"error"})
+     res.status(400).send({"error" : error})
     }
-})
-
-
-module.exports={
-    contactRouter
-}
+ })
